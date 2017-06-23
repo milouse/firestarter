@@ -3,6 +3,7 @@
 # firestarter - easily start different firefox profiles with dmenu
 
 import os
+import re
 import sys
 import shutil
 import subprocess
@@ -34,15 +35,23 @@ def get_profile_names(mozdir="~/.mozilla"):
         os.path.join(mozdir, "firefox/profiles.ini"))
     cfg = configparser.ConfigParser()
     cfg.read(profile_ini_path)
-    return [cfg[section]['name']
-            for section in cfg.sections()
-            if section.startswith('Profile')]
+    profiles = []
+    for section in cfg.sections():
+        if section.startswith("Profile"):
+            profiles.append(cfg[section]["name"])
+            profiles.append("{} (private)".format(cfg[section]["name"]))
+    return profiles
 
 
 def start_firefox(profile="default", firefox_cmd="firefox"):
-    return subprocess.call([firefox_cmd,
-                            "-new-instance",
-                            "-P", profile])
+    cmd_line = [firefox_cmd, "-P"]
+    m = re.search("(.*)\s\(private\)$", profile)
+    if m:
+        cmd_line.append(m[1])
+        cmd_line.append("--private-window")
+    else:
+        cmd_line.append(profile)
+    return subprocess.call(cmd_line)
 
 
 def main():
