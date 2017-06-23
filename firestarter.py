@@ -6,7 +6,6 @@ import os
 import subprocess
 import configparser
 
-import plac
 
 
 def check_dmenu():
@@ -61,4 +60,4 @@ def main():
     start_firefox(profile)
 
 if __name__ == '__main__':
-    plac.call(main)
+    main()
