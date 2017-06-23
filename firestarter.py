@@ -3,6 +3,7 @@
 # firestarter - easily start different firefox profiles with dmenu
 
 import os
+import sys
 import subprocess
 import configparser
 
@@ -56,6 +57,8 @@ def main():
         exit(1)
     profiles = get_profile_names()
     profile = dmenu(profiles, 'dmenu -b -i -l 20')
+    if profile == "":
+        sys.exit()
     start_firefox(profile)
 
 
