@@ -4,27 +4,22 @@
 
 import os
 import sys
+import shutil
 import subprocess
 import configparser
 
 
-
-def check_dmenu():
-    '''Check if dmenu is available.'''
-    try:
-        devnull = open(os.devnull)
-        subprocess.Popen(
-            ['dmenu', '-h'], stdout=devnull, stderr=devnull).communicate()
-    except OSError as e:
-        if e.errno == os.errno.ENOENT:
-            return False
-    return True
+default_rofi_command = "rofi -dmenu -location 6 -no-case-sensitive -width 100"
 
 
-def dmenu(options, dmenu):
-    '''Call dmenu with a list of options.'''
+def check_rofi():
+    """Check if rofi is available."""
+    return bool(shutil.which("rofi"))
 
-    cmd = subprocess.Popen(dmenu,
+
+def rofi(options, rofi):
+    """Call rofi with a list of options."""
+    cmd = subprocess.Popen(rofi,
                            shell=True,
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
@@ -52,11 +47,11 @@ def start_firefox(profile="default", firefox_cmd="firefox"):
 
 def main():
     if not check_rofi():
-        print("This script requires dmenu. Most distributions should have it "
+        print("This script requires rofi. Most distributions should have it "
               "packaged.")
         exit(1)
     profiles = get_profile_names()
-    profile = dmenu(profiles, 'dmenu -b -i -l 20')
+    profile = rofi(profiles, default_rofi_command)
     if profile == "":
         sys.exit()
     start_firefox(profile)
