@@ -28,15 +28,14 @@ def dmenu(options, dmenu):
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
-    stdout, _ = cmd.communicate('\n'.join(options).encode('utf-8'))
-    return stdout.decode('utf-8').strip('\n')
+    stdout, _ = cmd.communicate("\n".join(options).encode("utf-8"))
+    return stdout.decode("utf-8").strip("\n")
 
 
-def get_profile_names(mozdir='~/.mozilla'):
-    '''Get all firefox profiles from the profiles.ini file.'''
+def get_profile_names(mozdir="~/.mozilla"):
+    """Get all firefox profiles from the profiles.ini file."""
     profile_ini_path = os.path.expanduser(
-        os.path.join(mozdir, 'firefox/profiles.ini'))
-    print(profile_ini_path)
+        os.path.join(mozdir, "firefox/profiles.ini"))
     cfg = configparser.ConfigParser()
     cfg.read(profile_ini_path)
     return [cfg[section]['name']
@@ -44,20 +43,21 @@ def get_profile_names(mozdir='~/.mozilla'):
             if section.startswith('Profile')]
 
 
-def start_firefox(profile='default', firefox_cmd='firefox'):
+def start_firefox(profile="default", firefox_cmd="firefox"):
     return subprocess.call([firefox_cmd,
-                            '-new-instance',
-                            '-P', profile])
+                            "-new-instance",
+                            "-P", profile])
 
 
 def main():
-    if not check_dmenu():
-        print('This script requires dmenu. Most distributions should have it '
-              'packaged.')
+    if not check_rofi():
+        print("This script requires dmenu. Most distributions should have it "
+              "packaged.")
         exit(1)
     profiles = get_profile_names()
     profile = dmenu(profiles, 'dmenu -b -i -l 20')
     start_firefox(profile)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
